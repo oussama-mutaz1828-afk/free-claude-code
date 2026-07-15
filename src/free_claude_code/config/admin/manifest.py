@@ -59,6 +59,11 @@ SECTIONS: tuple[ConfigSectionSpec, ...] = (
         "Provider-prefixed models used for Claude model tiers.",
     ),
     ConfigSectionSpec(
+        "agents",
+        "Agent Persona",
+        "Select a specialized AI agent persona to inject into requests.",
+    ),
+    ConfigSectionSpec(
         "thinking",
         "Thinking",
         "Global and tier-specific thinking behavior.",
@@ -99,6 +104,16 @@ SECTIONS: tuple[ConfigSectionSpec, ...] = (
 
 
 _NON_PROVIDER_FIELDS: tuple[ConfigFieldSpec, ...] = (
+    ConfigFieldSpec(
+        "AGENT_PERSONA",
+        "Agent Persona",
+        "agents",
+        settings_attr="agent_persona",
+        description=(
+            "Specialized agent identity injected into system prompts. "
+            "Leave blank to disable. Use GET /admin/api/agents for available IDs."
+        ),
+    ),
     ConfigFieldSpec(
         "MODEL",
         "Default Model",
