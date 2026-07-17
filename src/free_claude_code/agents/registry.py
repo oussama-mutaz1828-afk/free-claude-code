@@ -13,6 +13,8 @@ DIVISIONS: tuple[AgentDivision, ...] = (
     AgentDivision("security", "Security", "ShieldCheck", "#EF4444"),
     AgentDivision("testing", "Testing", "FlaskConical", "#F59E0B"),
     AgentDivision("design", "Design", "PenTool", "#EC4899"),
+    AgentDivision("sales", "Sales", "Handshake", "#10B981"),
+    AgentDivision("marketing", "Marketing", "Megaphone", "#F97316"),
 )
 
 
