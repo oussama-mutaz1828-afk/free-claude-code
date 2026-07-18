@@ -198,6 +198,9 @@ class Settings(BaseSettings):
     # ==================== Fast Prefix Detection ====================
     fast_prefix_detection: bool = True
 
+    # ==================== Agent Persona ====================
+    agent_persona: str = Field(default="", validation_alias="AGENT_PERSONA")
+
     # ==================== Optimizations ====================
     enable_network_probe_mock: bool = True
     enable_title_generation_skip: bool = True

@@ -7,6 +7,7 @@ from dataclasses import dataclass, replace
 from fastapi.responses import JSONResponse, Response
 from loguru import logger
 
+from free_claude_code.agents.injection import apply_agent_persona
 from free_claude_code.api.detection import is_safety_classifier_request
 from free_claude_code.api.optimization_handlers import try_optimizations
 from free_claude_code.api.request_errors import (
@@ -99,6 +100,7 @@ class MessagesHandler:
         try:
             require_non_empty_messages(request_data.messages)
             routed = self._model_router.resolve_messages_request(request_data)
+            routed = self._apply_agent_persona(routed)
             routed = self._apply_message_routing_policies(routed)
             self._reject_unsupported_server_tools(routed)
 
@@ -265,6 +267,17 @@ class MessagesHandler:
         )
         if tool_err is not None:
             raise InvalidRequestError(tool_err)
+
+    def _apply_agent_persona(
+        self, routed: RoutedMessagesRequest
+    ) -> RoutedMessagesRequest:
+        persona = self._settings.agent_persona
+        if not persona:
+            return routed
+        updated_request = apply_agent_persona(routed.request, persona)
+        if updated_request is routed.request:
+            return routed
+        return RoutedMessagesRequest(request=updated_request, resolved=routed.resolved)
 
     def _apply_message_routing_policies(
         self, routed: RoutedMessagesRequest

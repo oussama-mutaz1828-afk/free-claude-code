@@ -10,6 +10,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
+from free_claude_code.agents.registry import get_agent_registry
 from free_claude_code.config.admin.manifest import FIELD_BY_KEY
 from free_claude_code.config.admin.persistence import validate_updates
 from free_claude_code.config.admin.values import load_config_response
@@ -141,6 +142,51 @@ async def test_provider(
 ):
     require_loopback_admin(request)
     return await services.admin.test_provider(provider_id)
+
+
+@router.get("/admin/api/agents")
+async def list_agents(request: Request):
+    require_loopback_admin(request)
+    registry = get_agent_registry()
+    agents = [
+        {
+            "agent_id": a.agent_id,
+            "name": a.name,
+            "description": a.description,
+            "division": a.division,
+            "emoji": a.emoji,
+            "vibe": a.vibe,
+        }
+        for a in registry.agents
+    ]
+    divisions = [
+        {
+            "division_id": d.division_id,
+            "label": d.label,
+            "icon": d.icon,
+            "color": d.color,
+        }
+        for d in registry.divisions
+    ]
+    return {"agents": agents, "divisions": divisions}
+
+
+@router.get("/admin/api/agents/{agent_id}")
+async def get_agent(agent_id: str, request: Request):
+    require_loopback_admin(request)
+    registry = get_agent_registry()
+    agent = registry.get(agent_id)
+    if agent is None:
+        raise HTTPException(status_code=404, detail=f"Agent '{agent_id}' not found")
+    return {
+        "agent_id": agent.agent_id,
+        "name": agent.name,
+        "description": agent.description,
+        "division": agent.division,
+        "emoji": agent.emoji,
+        "vibe": agent.vibe,
+        "system_prompt": agent.system_prompt,
+    }
 
 
 @router.post("/admin/api/models/refresh")
