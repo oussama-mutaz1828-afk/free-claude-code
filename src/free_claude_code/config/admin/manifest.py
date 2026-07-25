@@ -115,6 +115,36 @@ _NON_PROVIDER_FIELDS: tuple[ConfigFieldSpec, ...] = (
         ),
     ),
     ConfigFieldSpec(
+        "ACTIVE_SKILL",
+        "Active Skill",
+        "skills",
+        settings_attr="active_skill",
+        description=(
+            "Specialized skill workflow injected into system prompts. "
+            "Leave blank to disable. Use GET /admin/api/skills for available IDs."
+        ),
+    ),
+    ConfigFieldSpec(
+        "ACTIVE_COMMAND",
+        "Active Command",
+        "commands",
+        settings_attr="active_command",
+        description=(
+            "Command workflow definition. "
+            "Leave blank to disable. Use GET /admin/api/commands for available IDs."
+        ),
+    ),
+    ConfigFieldSpec(
+        "ACTIVE_RULES",
+        "Active Rules",
+        "rules",
+        settings_attr="active_rules",
+        description=(
+            "Comma-separated rule category IDs (e.g. 'common,python'). "
+            "Leave blank to disable. Use GET /admin/api/rules for available categories."
+        ),
+    ),
+    ConfigFieldSpec(
         "MODEL",
         "Default Model",
         "models",

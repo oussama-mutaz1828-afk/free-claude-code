@@ -1,8 +1,20 @@
 """Parse agent definition markdown files into AgentDefinition objects."""
 
+import re
 from pathlib import Path
 
 from .models import AgentDefinition
+
+_TOOLS_RE = re.compile(r"\[([^\]]*)\]")
+
+
+def _parse_tools(value: str) -> tuple[str, ...]:
+    """Parse a tools field like '["Read", "Grep", "Glob"]' into a tuple."""
+    match = _TOOLS_RE.search(value)
+    if not match:
+        return ()
+    inner = match.group(1)
+    return tuple(t.strip().strip('"').strip("'") for t in inner.split(",") if t.strip())
 
 
 def _parse_frontmatter(raw: str) -> tuple[dict[str, str], str]:
@@ -42,6 +54,7 @@ def load_agent_file(path: Path) -> AgentDefinition:
     fields, body = _parse_frontmatter(raw)
 
     agent_id = _agent_id_from_path(path)
+    tools = _parse_tools(fields.get("tools", ""))
     return AgentDefinition(
         agent_id=agent_id,
         name=fields.get("name", agent_id),
@@ -50,6 +63,8 @@ def load_agent_file(path: Path) -> AgentDefinition:
         emoji=fields.get("emoji", ""),
         vibe=fields.get("vibe", ""),
         system_prompt=body,
+        tools=tools,
+        model=fields.get("model", ""),
     )
 
 

@@ -49,6 +49,7 @@ from free_claude_code.core.anthropic import (
 from free_claude_code.core.diagnostics import safe_exception_message
 from free_claude_code.core.failures import ExecutionFailure, find_execution_failure
 from free_claude_code.core.trace import trace_event
+from free_claude_code.skills.injection import apply_skill
 
 
 @dataclass(frozen=True)
@@ -101,6 +102,7 @@ class MessagesHandler:
             require_non_empty_messages(request_data.messages)
             routed = self._model_router.resolve_messages_request(request_data)
             routed = self._apply_agent_persona(routed)
+            routed = self._apply_active_skill(routed)
             routed = self._apply_message_routing_policies(routed)
             self._reject_unsupported_server_tools(routed)
 
@@ -275,6 +277,17 @@ class MessagesHandler:
         if not persona:
             return routed
         updated_request = apply_agent_persona(routed.request, persona)
+        if updated_request is routed.request:
+            return routed
+        return RoutedMessagesRequest(request=updated_request, resolved=routed.resolved)
+
+    def _apply_active_skill(
+        self, routed: RoutedMessagesRequest
+    ) -> RoutedMessagesRequest:
+        skill_id = self._settings.active_skill
+        if not skill_id:
+            return routed
+        updated_request = apply_skill(routed.request, skill_id)
         if updated_request is routed.request:
             return routed
         return RoutedMessagesRequest(request=updated_request, resolved=routed.resolved)
