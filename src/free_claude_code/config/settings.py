@@ -201,6 +201,15 @@ class Settings(BaseSettings):
     # ==================== Agent Persona ====================
     agent_persona: str = Field(default="", validation_alias="AGENT_PERSONA")
 
+    # ==================== Active Skill ====================
+    active_skill: str = Field(default="", validation_alias="ACTIVE_SKILL")
+
+    # ==================== Active Command ====================
+    active_command: str = Field(default="", validation_alias="ACTIVE_COMMAND")
+
+    # ==================== Active Rules ====================
+    active_rules: str = Field(default="", validation_alias="ACTIVE_RULES")
+
     # ==================== Optimizations ====================
     enable_network_probe_mock: bool = True
     enable_title_generation_skip: bool = True

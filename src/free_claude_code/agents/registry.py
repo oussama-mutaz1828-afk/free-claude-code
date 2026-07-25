@@ -15,6 +15,14 @@ DIVISIONS: tuple[AgentDivision, ...] = (
     AgentDivision("design", "Design", "PenTool", "#EC4899"),
     AgentDivision("sales", "Sales", "Handshake", "#10B981"),
     AgentDivision("marketing", "Marketing", "Megaphone", "#F97316"),
+    AgentDivision("review", "Code Review", "Eye", "#8B5CF6"),
+    AgentDivision("build", "Build Resolution", "Hammer", "#6366F1"),
+    AgentDivision("architecture", "Architecture", "Building", "#0EA5E9"),
+    AgentDivision("devops", "DevOps & Infra", "Server", "#14B8A6"),
+    AgentDivision("research", "Research & Analysis", "Search", "#A855F7"),
+    AgentDivision("ml", "Machine Learning", "Brain", "#F43F5E"),
+    AgentDivision("ops", "Operations", "Settings", "#64748B"),
+    AgentDivision("opensource", "Open Source", "GitBranch", "#22C55E"),
 )
 
 

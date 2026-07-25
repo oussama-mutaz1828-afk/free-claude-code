@@ -1,6 +1,6 @@
 """Data models for agent persona definitions."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,3 +24,5 @@ class AgentDefinition:
     emoji: str
     vibe: str
     system_prompt: str
+    tools: tuple[str, ...] = field(default_factory=tuple)
+    model: str = ""

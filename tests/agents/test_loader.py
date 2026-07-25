@@ -81,6 +81,24 @@ class TestLoadAgentFile:
         agent = load_agent_file(md)
         assert agent.agent_id == "my-cool-agent"
 
+    def test_load_ecc_agent_with_tools_and_model(self, tmp_path: Path):
+        md = tmp_path / "architect.md"
+        md.write_text(
+            '---\nname: architect\ndescription: Software architect\ntools: ["Read", "Grep", "Glob"]\nmodel: opus\n---\nYou are an architect.',
+            encoding="utf-8",
+        )
+        agent = load_agent_file(md)
+        assert agent.agent_id == "architect"
+        assert agent.tools == ("Read", "Grep", "Glob")
+        assert agent.model == "opus"
+
+    def test_load_agent_without_tools_defaults_empty(self, tmp_path: Path):
+        md = tmp_path / "simple.md"
+        md.write_text("---\nname: Simple\n---\nPrompt", encoding="utf-8")
+        agent = load_agent_file(md)
+        assert agent.tools == ()
+        assert agent.model == ""
+
 
 class TestLoadAgentsFromDirectory:
     def test_load_empty_directory(self, tmp_path: Path):
@@ -157,6 +175,17 @@ class TestBundledDefinitions:
             "outbound-strategist",
             "deal-strategist",
             "sales-engineer",
+            "architect",
+            "python-reviewer",
+            "typescript-reviewer",
+            "react-reviewer",
+            "rust-reviewer",
+            "go-reviewer",
+            "planner",
+            "code-explorer",
+            "security-reviewer",
+            "performance-optimizer",
+            "tdd-guide",
         ],
     )
     def test_expected_agent_exists(self, agent_id: str):

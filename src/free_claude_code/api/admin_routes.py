@@ -11,9 +11,12 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field
 
 from free_claude_code.agents.registry import get_agent_registry
+from free_claude_code.commands.registry import get_command_registry
 from free_claude_code.config.admin.manifest import FIELD_BY_KEY
 from free_claude_code.config.admin.persistence import validate_updates
 from free_claude_code.config.admin.values import load_config_response
+from free_claude_code.rules.registry import get_rule_registry
+from free_claude_code.skills.registry import get_skill_registry
 
 from .dependencies import get_services
 from .ports import ApiServices
@@ -156,6 +159,8 @@ async def list_agents(request: Request):
             "division": a.division,
             "emoji": a.emoji,
             "vibe": a.vibe,
+            "tools": list(a.tools),
+            "model": a.model,
         }
         for a in registry.agents
     ]
@@ -185,7 +190,112 @@ async def get_agent(agent_id: str, request: Request):
         "division": agent.division,
         "emoji": agent.emoji,
         "vibe": agent.vibe,
+        "tools": list(agent.tools),
+        "model": agent.model,
         "system_prompt": agent.system_prompt,
+    }
+
+
+@router.get("/admin/api/skills")
+async def list_skills(request: Request):
+    require_loopback_admin(request)
+    registry = get_skill_registry()
+    return {
+        "skills": [
+            {
+                "skill_id": s.skill_id,
+                "name": s.name,
+                "description": s.description,
+                "version": s.version,
+                "has_references": s.has_references,
+            }
+            for s in registry.skills
+        ],
+        "count": len(registry),
+    }
+
+
+@router.get("/admin/api/skills/{skill_id}")
+async def get_skill(skill_id: str, request: Request):
+    require_loopback_admin(request)
+    registry = get_skill_registry()
+    skill = registry.get(skill_id)
+    if skill is None:
+        raise HTTPException(status_code=404, detail=f"Skill '{skill_id}' not found")
+    return {
+        "skill_id": skill.skill_id,
+        "name": skill.name,
+        "description": skill.description,
+        "version": skill.version,
+        "author": skill.author,
+        "has_references": skill.has_references,
+        "reference_files": list(skill.reference_files),
+        "instructions": skill.instructions,
+    }
+
+
+@router.get("/admin/api/commands")
+async def list_commands(request: Request):
+    require_loopback_admin(request)
+    registry = get_command_registry()
+    return {
+        "commands": [
+            {
+                "command_id": c.command_id,
+                "description": c.description,
+                "argument_hint": c.argument_hint,
+            }
+            for c in registry.commands
+        ],
+        "count": len(registry),
+    }
+
+
+@router.get("/admin/api/commands/{command_id}")
+async def get_command(command_id: str, request: Request):
+    require_loopback_admin(request)
+    registry = get_command_registry()
+    command = registry.get(command_id)
+    if command is None:
+        raise HTTPException(status_code=404, detail=f"Command '{command_id}' not found")
+    return {
+        "command_id": command.command_id,
+        "description": command.description,
+        "argument_hint": command.argument_hint,
+        "instructions": command.instructions,
+    }
+
+
+@router.get("/admin/api/rules")
+async def list_rules(request: Request):
+    require_loopback_admin(request)
+    registry = get_rule_registry()
+    return {
+        "categories": registry.categories,
+        "rules": [
+            {
+                "rule_id": r.rule_id,
+                "category": r.category,
+                "file_patterns": list(r.file_patterns),
+            }
+            for r in registry.rules
+        ],
+        "count": len(registry),
+    }
+
+
+@router.get("/admin/api/rules/{rule_id:path}")
+async def get_rule(rule_id: str, request: Request):
+    require_loopback_admin(request)
+    registry = get_rule_registry()
+    rule = registry.get(rule_id)
+    if rule is None:
+        raise HTTPException(status_code=404, detail=f"Rule '{rule_id}' not found")
+    return {
+        "rule_id": rule.rule_id,
+        "category": rule.category,
+        "file_patterns": list(rule.file_patterns),
+        "instructions": rule.instructions,
     }
 
 
