@@ -61,3 +61,9 @@ GitHub CI runs Ruff in check-only mode and also bans `# type: ignore`, `# ty: ig
 Changes to runtime code, packaging, dependencies, or install/CI scripts require a semantic version bump in `pyproject.toml` and a matching `uv lock` update in the same commit. Documentation, tests, smoke coverage, and repository configuration do not require a version bump by themselves.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for extension checklists and the full system design.
+
+## Delegating Tasks To Codex
+
+[skills/codex-delegate](skills/codex-delegate/SKILL.md) is a Claude Code skill for handing a bounded
+task to the OpenAI Codex CLI as a background implementer, then reviewing its diff and landing the
+commit yourself. See [skills/README.md](skills/README.md) for attribution and other available skills.
